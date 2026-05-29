@@ -26,14 +26,21 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pillow \
     opencv-python-headless
 
-
+# ==================== 让 pyppeteer 下载 Chromium ====================
+RUN python -c "
+import asyncio
+from pyppeteer import launch
+async def main():
+    browser = await launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
+    await browser.close()
+asyncio.run(main())
+print('✅ Chromium downloaded by pyppeteer')
+"
 # ==================== 环境变量 ====================
 ENV DISPLAY=:99 \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
-    PYPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    PYTHONUNBUFFERED=1 \
+    PYPPETEER_SKIP_CHROMIUM_DOWNLOAD=false \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
-    PYPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
-
 # ==================== 启动命令 ====================
 COPY . .
 
